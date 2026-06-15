@@ -1,0 +1,7 @@
+/.esphome/
+/secrets.yaml
+/esphome-src/
+/esphome-dashboard/
+/esphome_dashboard/
+/device-builder/
+/device-builder-frontend/
