@@ -1,0 +1,8 @@
+.venv/
+.esphome/
+.pioenvs/
+platformio-cache/
+dev/
+docker-compose.dev.yml
+gh_token.txt
+.device-builder*

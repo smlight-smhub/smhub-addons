@@ -1,0 +1,6 @@
+build_from:
+  amd64: "ghcr.io/esphome/docker-base:debian-ha-addon-2026.06.1"
+  aarch64: "ghcr.io/esphome/docker-base:debian-ha-addon-2026.06.1"
+args:
+  # This sets the target branch for both the CI pipeline and local Home Assistant builds.
+  ESPHOME_REF: "dev"

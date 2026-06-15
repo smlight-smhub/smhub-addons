@@ -1,0 +1,4 @@
+
+[submodule "esphome-smhub/config"]
+	path = esphome-smhub/config
+	url = https://github.com/smlight-smhub/rtos-config.git
