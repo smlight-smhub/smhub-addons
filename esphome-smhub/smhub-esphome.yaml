@@ -1,9 +1,8 @@
+packages:
+  core: !include common-core.yaml
+
 esphome:
-  name: rtos
-  min_version: 2026.5.3
-  project:
-    name: "smlight.smhub"
-    version: "1.0.0"
+  name: rtos-smhub
 
 dashboard_import:
   package_import_url: github://smlight-smhub/smhub-addons/esphome-smhub/smhub-esphome.yaml@main
@@ -12,14 +11,7 @@ sg2000:
   board: SMHUB
   version: "2026.5.3"
 
-logger:
-  level: DEBUG
-  baud_rate: 115200
-
 api:
-  reboot_timeout: 0s
-  encryption:
-    key: "VGVzdGluZ1RSTkdFbmNyeXB0aW9uS2V5MTIzNDU2Nzg="
   services:
     - service: play_rtttl
       variables:
@@ -28,12 +20,6 @@ api:
         - rtttl.play:
             id: smhub_buzzer
             rtttl: !lambda 'return song_str;'
-
-switch:
-  - platform: gpio
-    name: "Blue led"
-    pin: "led_cus"
-    restore_mode: RESTORE_DEFAULT_OFF
 
 binary_sensor:
   - platform: gpio
@@ -72,25 +58,12 @@ rtttl:
   output: smhub_pwm
   id: smhub_buzzer
 
-bluetooth_proxy:
-  active: true
-
-i2c:
-  i2c_id: 4
-  frequency: 100kHz
-
 output:
  - platform: sg2000_pwm
    id: smhub_pwm
    pwm_id: 3
    channel: 2
 
-time:
-  - platform: smhub_time
-    id: smhub_time
-
-ota:
-  - platform: esphome
-    port: 3232
-
-
+i2c:
+  i2c_id: 4
+  frequency: 100kHz

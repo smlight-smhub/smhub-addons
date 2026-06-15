@@ -106,7 +106,7 @@ output:
 
 time:
   - platform: smhub_time
-    id: smhub_time
+    id: smlight_time
 
 ota:
   - platform: esphome

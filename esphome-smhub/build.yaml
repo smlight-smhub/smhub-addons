@@ -1,3 +1,5 @@
 build_from:
   amd64: "ghcr.io/esphome/esphome-hassio-amd64:2026.5.3"
   aarch64: "ghcr.io/esphome/esphome-hassio-aarch64:2026.5.3"
+esphome_ref: 2026.5.3-1
+

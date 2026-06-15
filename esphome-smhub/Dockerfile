@@ -1,21 +1,24 @@
 ARG BUILD_FROM
 FROM ${BUILD_FROM}
 
-# Install any extra build dependencies if needed
 RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
     build-essential \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy our custom ESPHome python source fork
+# Pre-cache PlatformIO platform, toolchain, and framework dependencies.
+RUN mkdir -p /tmp/dummy-pio && \
+    printf "[env:smhub]\nplatform = https://github.com/smlight-smhub/platform-sg2000.git\nboard = smhub\nframework = freertos\n" > /tmp/dummy-pio/platformio.ini && \
+    platformio pkg install --project-dir /tmp/dummy-pio && \
+    rm -rf /tmp/dummy-pio
+
 COPY esphome-src/ /opt/esphome-src/
 
-# Copy the default smhub-esphome.yaml template file
-COPY smhub-esphome.yaml /opt/smhub-esphome.yaml
+COPY common-core.yaml smhub-esphome.yaml nano-esphome.yaml /opt/
 
 # Install the fork, replacing the official ESPHome package
 # We use --no-deps to preserve all existing dependencies pre-installed in the base image
-RUN pip install --no-deps --force-reinstall /opt/esphome-src
+RUN pip install --no-deps --no-build-isolation --force-reinstall /opt/esphome-src
 
 # Pre-cache PlatformIO dependencies (platform, framework, toolchain) by compiling a dummy project
 # This ensures that when the user runs the add-on, compilation is instant and doesn't require a ~250MB download
