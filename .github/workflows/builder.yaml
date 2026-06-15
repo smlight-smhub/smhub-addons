@@ -1,0 +1,65 @@
+name: Build and Publish ESPHome Builder Image
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        arch: [amd64, aarch64]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry (GHCR)
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Determine Target Configurations
+        id: config
+        run: |
+          ESPHOME_VER="2026.5.3"
+          RELEASE_VER="2026.5.3-1"
+          
+          if [ "${{ matrix.arch }}" = "amd64" ]; then
+            echo "base_image=ghcr.io/esphome/esphome-hassio-amd64:${ESPHOME_VER}" >> $GITHUB_OUTPUT
+            echo "platform=linux/amd64" >> $GITHUB_OUTPUT
+          else
+            echo "base_image=ghcr.io/esphome/esphome-hassio-aarch64:${ESPHOME_VER}" >> $GITHUB_OUTPUT
+            echo "platform=linux/arm64" >> $GITHUB_OUTPUT
+          fi
+          
+          echo "tag_release=ghcr.io/${{ github.repository_owner }}/esphome-smhub-${{ matrix.arch }}:${RELEASE_VER}" >> $GITHUB_OUTPUT
+          echo "tag_latest=ghcr.io/${{ github.repository_owner }}/esphome-smhub-${{ matrix.arch }}:latest" >> $GITHUB_OUTPUT
+
+      - name: Build and Push Docker Image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./smhub-addons/esphome-smhub/Dockerfile
+          platforms: ${{ steps.config.outputs.platform }}
+          push: true
+          build-args: |
+            BUILD_FROM=${{ steps.config.outputs.base_image }}
+          tags: |
+            ${{ steps.config.outputs.tag_release }}
+            ${{ steps.config.outputs.tag_latest }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
