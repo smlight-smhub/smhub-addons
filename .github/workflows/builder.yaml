@@ -5,7 +5,7 @@ on:
     branches:
       - main
     tags:
-      - 'v*'
+      - "v*"
 
 permissions:
   packages: write
@@ -57,13 +57,13 @@ jobs:
           BASE_IMAGE=$(yq eval '.build_from.${{ matrix.arch }}' ./esphome-smhub/build.yaml)
           echo "Selected Base Image: $BASE_IMAGE"
           echo "base_image=$BASE_IMAGE" >> $GITHUB_OUTPUT
-          
+
           if [ "${{ matrix.arch }}" = "amd64" ]; then
             echo "platform=linux/amd64" >> $GITHUB_OUTPUT
           else
             echo "platform=linux/arm64" >> $GITHUB_OUTPUT
           fi
-          
+
           echo "tag_release=ghcr.io/${{ github.repository_owner }}/esphome-smhub-${{ matrix.arch }}:${RELEASE_VER}" >> $GITHUB_OUTPUT
           echo "tag_latest=ghcr.io/${{ github.repository_owner }}/esphome-smhub-${{ matrix.arch }}:latest" >> $GITHUB_OUTPUT
 
@@ -120,7 +120,7 @@ jobs:
       - name: Prepare Artifacts
         run: |
           mkdir -p output
-          
+
           # Copy SMHUB firmware
           SMHUB_PIO="esphome-smhub/.esphome/build/rtos-smhub/.pioenvs/rtos-smhub"
           if [ -d "$SMHUB_PIO" ]; then
@@ -128,7 +128,7 @@ jobs:
             cp "$SMHUB_PIO/program_debug.elf" output/smhub-rtos_debug.elf || true
             cp "$SMHUB_PIO/program.bin" output/smhub-rtos.bin || true
           fi
-          
+
           # Copy NANO firmware
           NANO_PIO="esphome-smhub/.esphome/build/rtos-nano/.pioenvs/rtos-nano"
           if [ -d "$NANO_PIO" ]; then
