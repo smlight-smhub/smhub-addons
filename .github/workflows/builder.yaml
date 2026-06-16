@@ -7,12 +7,16 @@ on:
     tags:
       - 'v*'
 
+permissions:
+  packages: write
+  contents: read
+
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     strategy:
       matrix:
-        arch: [amd64]
+        arch: [amd64, aarch64]
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -47,14 +51,16 @@ jobs:
       - name: Determine Target Configurations
         id: config
         run: |
-          ESPHOME_VER="2026.5.3"
           RELEASE_VER="2026.5.3-1"
+
+          # Read base image directly from build.yaml
+          BASE_IMAGE=$(yq eval '.build_from.${{ matrix.arch }}' ./esphome-smhub/build.yaml)
+          echo "Selected Base Image: $BASE_IMAGE"
+          echo "base_image=$BASE_IMAGE" >> $GITHUB_OUTPUT
           
           if [ "${{ matrix.arch }}" = "amd64" ]; then
-            echo "base_image=ghcr.io/esphome/esphome-hassio-amd64:${ESPHOME_VER}" >> $GITHUB_OUTPUT
             echo "platform=linux/amd64" >> $GITHUB_OUTPUT
           else
-            echo "base_image=ghcr.io/esphome/esphome-hassio-aarch64:${ESPHOME_VER}" >> $GITHUB_OUTPUT
             echo "platform=linux/arm64" >> $GITHUB_OUTPUT
           fi
           
@@ -70,6 +76,8 @@ jobs:
           push: true
           build-args: |
             BUILD_FROM=${{ steps.config.outputs.base_image }}
+          secrets: |
+            "GH_TOKEN=${{ secrets.GH_TOKEN }}"
           tags: |
             ${{ steps.config.outputs.tag_release }}
             ${{ steps.config.outputs.tag_latest }}
@@ -78,14 +86,28 @@ jobs:
 
   compile:
     needs: build
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: amd64
+            runs_on: ubuntu-24.04
+          - arch: aarch64
+            runs_on: ubuntu-24.04-arm
+    runs-on: ${{ matrix.runs_on }}
     container:
-      image: ghcr.io/${{ github.repository_owner }}/esphome-smhub-amd64:latest
+      image: ghcr.io/${{ github.repository_owner }}/esphome-smhub-${{ matrix.arch }}:latest
+      env:
+        PLATFORMIO_CORE_DIR: /opt/platformio
     steps:
       - name: Checkout
         uses: actions/checkout@v6
         with:
           submodules: recursive
+
+      - name: Configure Git Authentication
+        run: |
+          git config --global url."https://${{ secrets.GH_TOKEN }}@github.com/".insteadOf "https://github.com/"
 
       - name: Compile smhub-esphome
         run: |
@@ -103,7 +125,7 @@ jobs:
           SMHUB_PIO="esphome-smhub/.esphome/build/rtos-smhub/.pioenvs/rtos-smhub"
           if [ -d "$SMHUB_PIO" ]; then
             cp "$SMHUB_PIO/program.elf" output/smhub-rtos.elf || true
-            cp "$SMHUB_PIO/program_stripped.elf" output/smhub-rtos_stripped.elf || true
+            cp "$SMHUB_PIO/program_debug.elf" output/smhub-rtos_debug.elf || true
             cp "$SMHUB_PIO/program.bin" output/smhub-rtos.bin || true
           fi
           
@@ -111,13 +133,13 @@ jobs:
           NANO_PIO="esphome-smhub/.esphome/build/rtos-nano/.pioenvs/rtos-nano"
           if [ -d "$NANO_PIO" ]; then
             cp "$NANO_PIO/program.elf" output/nano-rtos.elf || true
-            cp "$NANO_PIO/program_stripped.elf" output/nano-rtos_stripped.elf || true
+            cp "$NANO_PIO/program_debug.elf" output/nano-rtos_debug.elf || true
             cp "$NANO_PIO/program.bin" output/nano-rtos.bin || true
           fi
 
       - name: Upload Build Artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
-          name: smhub-rtos-binaries
+          name: smhub-rtos-binaries-${{ matrix.arch }}
           path: output/
           if-no-files-found: error
