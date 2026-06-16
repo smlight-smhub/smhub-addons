@@ -1,0 +1,9 @@
+[submodule "dev/platform-sg2000"]
+	path = dev/platform-sg2000
+	url = https://github.com/smlight-smhub/platform-sg2000.git
+[submodule "dev/framework-sg2000-rtos"]
+	path = dev/framework-sg2000-rtos
+	url = https://github.com/smlight-smhub/framework-sg2000-rtos.git
+[submodule "dev/esphome-src"]
+	path = dev/esphome-src
+	url = https://github.com/smlight-smhub/esphome.git

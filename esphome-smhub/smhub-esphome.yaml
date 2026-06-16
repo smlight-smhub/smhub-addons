@@ -26,6 +26,7 @@ binary_sensor:
     name: "User Button"
     pin: 
       number: "btn_2"
+      inverted: true
       mode:
         input: true
         pullup: true
@@ -35,7 +36,7 @@ binary_sensor:
 light:
   - platform: sg2000_ws2812
     id: status_led
-    name: "Status LED"
+    name: "AmbiLight"
     spi_base: 0x04180000
     num_leds: 12
     effects:

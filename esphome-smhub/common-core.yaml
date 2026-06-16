@@ -27,8 +27,9 @@ bluetooth_proxy:
 binary_sensor:
   - platform: gpio
     name: "Factory Reset Button"
-    pin: 
+    pin:
       number: "btn_1"
+      inverted: true
       mode:
         input: true
         pullup: true
