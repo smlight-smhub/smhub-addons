@@ -1,5 +1,5 @@
 name: "ESPHome for SMHUB"
-version: "2026.5.3-1"
+version: "2026.5.3-3"
 slug: "esphome-smhub"
 description: "ESPHome builder fork SMLIGHT SMHUB"
 url: "https://github.com/smlight-smhub/smhub-addons"
