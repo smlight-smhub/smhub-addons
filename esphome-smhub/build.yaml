@@ -1,6 +1,6 @@
 build_from:
   amd64: "ghcr.io/home-assistant/amd64-base-debian:trixie"
   aarch64: "ghcr.io/home-assistant/aarch64-base-debian:trixie"
-esphome_ref: 2026.5.3-1
+esphome_ref: 2026.5.3-2
 args:
   GH_TOKEN: "YOUR_GITHUB_PAT_HERE"
