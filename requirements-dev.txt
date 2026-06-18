@@ -1,0 +1,4 @@
+platformio>=6.1.19
+protobuf>=3.19.0
+grpcio-tools>=1.62.0
+-e dev/esphome-src

@@ -1,0 +1,27 @@
+; =====================================================================
+; ESPHome SMHUB Add-on - PlatformIO Override Configuration Template
+; =====================================================================
+; Copy this file to:
+;   esphome-smhub/.esphome/build/rtos-smhub/platformio_override.ini
+;
+; To toggle between local development and production Git builds.
+; =====================================================================
+
+[env:rtos-smhub]
+; Option A: Use the local Git submodules cloned inside smhub-addons/dev/
+platform = symlink://../../../../dev/platform-sg2000
+platform_packages =
+    framework-sg2000-rtos @ symlink://../../../../dev/framework-sg2000-rtos
+
+[env:rtos-nano]
+; Option A: Use the local Git submodules cloned inside smhub-addons/dev/
+platform = symlink://../../../../dev/platform-sg2000
+platform_packages =
+    framework-sg2000-rtos @ symlink://../../../../dev/framework-sg2000-rtos
+
+; ---------------------------------------------------------------------
+; PRODUCTION GIT BUILDS
+; To build against the production GitHub repositories, simply comment out
+; the overrides above (prefix with ';') or rename/delete this file.
+; PlatformIO will automatically fall back to the default Git URLs.
+; ---------------------------------------------------------------------

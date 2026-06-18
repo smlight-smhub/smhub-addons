@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+set -e
+
+# Suppress cache hardlink warnings on bind-mounted filesystems
+export UV_LINK_MODE=copy
+
+echo "========================================================="
+echo "  Bootstrapping SMLIGHT SMHUB Add-on (Local Dev)...      "
+echo "========================================================="
+
+# Ensure current user has write permissions to /opt/venv
+if [ -d "/opt/venv" ]; then
+    echo "Ensuring /opt/venv permissions are set correctly..."
+    if command -v sudo &> /dev/null; then
+        sudo chown -R $(whoami):$(whoami) /opt/venv
+    else
+        chown -R $(whoami):$(whoami) /opt/venv || true
+    fi
+fi
+
+# Ensure current user has write permissions to ~/.platformio
+PLATFORMIO_DIR="${HOME}/.platformio"
+if [ -d "$PLATFORMIO_DIR" ]; then
+    echo "Ensuring $PLATFORMIO_DIR permissions are set correctly..."
+    if command -v sudo &> /dev/null; then
+        sudo chown -R $(whoami):$(whoami) "$PLATFORMIO_DIR"
+    else
+        chown -R $(whoami):$(whoami) "$PLATFORMIO_DIR" || true
+    fi
+fi
+
+# 1. Initialize and update local dev submodules (platform, framework, esphome)
+echo "Initializing and updating git submodules for local development..."
+git submodule update --init --recursive
+
+echo "Installing local development dependencies..."
+uv pip install -r requirements-dev.txt
+
+# Automatically pre-stage PlatformIO overrides for local submodules
+echo "Pre-staging PlatformIO overrides for local dev/ platform/framework submodules..."
+mkdir -p esphome-smhub/.esphome/build/rtos-smhub
+cp platformio_override.ini.example esphome-smhub/.esphome/build/rtos-smhub/platformio_override.ini
+
+mkdir -p esphome-smhub/.esphome/build/rtos-nano
+cp platformio_override.ini.example esphome-smhub/.esphome/build/rtos-nano/platformio_override.ini
+
+echo "========================================================="
+echo "  DevContainer Bootstrapped!                             "
+echo "  Run 'esphome' command directly in your terminal.        "
+echo "  Local dev submodules are symlinked for compilation.     "
+echo "========================================================="
