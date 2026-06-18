@@ -2,4 +2,5 @@ build_from:
   amd64: "python:3.14-slim"
   aarch64: "python:3.14-slim"
 esphome_ref: 2026.5.3-1
-
+args:
+  GH_TOKEN: "YOUR_GITHUB_PAT_HERE"
