@@ -6,7 +6,7 @@ ARG GH_TOKEN=""
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN if [ -f /etc/alpine-release ]; then \
-        apk add --no-cache git curl build-base python3 py3-pip python3-dev protobuf nginx; \
+        apk add --no-cache git curl build-base python3 py3-pip python3-dev protobuf nginx gcompat libstdc++; \
     else \
         apt-get update && apt-get install -y --no-install-recommends \
             git \
