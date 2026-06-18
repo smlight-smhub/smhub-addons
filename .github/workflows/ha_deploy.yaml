@@ -6,6 +6,9 @@ on:
       - main
     tags:
       - 'v*'
+  pull_request:
+    branches:
+      - main
   workflow_dispatch:
 
 permissions:
@@ -22,6 +25,7 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v6
         with:
+          token: ${{ secrets.GH_TOKEN }}
           submodules: recursive
 
       - name: Determine ESPHome Ref
@@ -71,8 +75,12 @@ jobs:
             echo "platform=linux/arm64" >> $GITHUB_OUTPUT
           fi
           
-          echo "tag_version=ghcr.io/${{ github.repository_owner }}/esphome-smhub-${{ matrix.arch }}:${VERSION}" >> $GITHUB_OUTPUT
-          echo "tag_latest=ghcr.io/${{ github.repository_owner }}/esphome-smhub-${{ matrix.arch }}:latest" >> $GITHUB_OUTPUT
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            TAG="pr-${{ github.event.number }}"
+            echo "tags=ghcr.io/${{ github.repository_owner }}/esphome-smhub-${{ matrix.arch }}:${TAG}" >> $GITHUB_OUTPUT
+          else
+            echo "tags=ghcr.io/${{ github.repository_owner }}/esphome-smhub-${{ matrix.arch }}:${VERSION},ghcr.io/${{ github.repository_owner }}/esphome-smhub-${{ matrix.arch }}:latest" >> $GITHUB_OUTPUT
+          fi
 
       - name: Build and Push Docker Image
         uses: docker/build-push-action@v7
@@ -80,13 +88,11 @@ jobs:
           context: ./esphome-smhub
           file: ./esphome-smhub/Dockerfile
           platforms: ${{ steps.config.outputs.platform }}
-          push: true
+          push: ${{ github.event_name != 'pull_request' }}
           build-args: |
             BUILD_FROM=${{ steps.config.outputs.base_image }}
           secrets: |
             "GH_TOKEN=${{ secrets.GH_TOKEN }}"
-          tags: |
-            ${{ steps.config.outputs.tag_version }}
-            ${{ steps.config.outputs.tag_latest }}
+          tags: ${{ steps.config.outputs.tags }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
