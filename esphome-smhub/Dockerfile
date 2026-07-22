@@ -113,6 +113,5 @@ COPY --from=python-builder /opt /opt
 # Inherits the entrypoint from the base HA Addon image
 # We must copy rootfs and template configs
 COPY --from=python-builder /opt/esphome-src/docker/ha-addon-rootfs/ /
-COPY config/smhub-esphome.yaml config/nano-esphome.yaml config/.common-core.yaml /opt/
 
-RUN python3 -c 'f = open("/etc/s6-overlay/s6-rc.d/esphome/run", "r"); content = f.read(); f.close(); insertion = "\nif [ -d /opt/platformio ]; then\n    bashio::log.info \"Pre-populating PlatformIO cache...\"\n    mkdir -p \"${pio_cache_base}\"\n    cp -rn /opt/platformio/* \"${pio_cache_base}/\" || true\nfi\n"; content = content.replace("readonly pio_cache_base=/data/cache/platformio", "readonly pio_cache_base=/data/cache/platformio" + insertion).replace("/config/esphome", "/config/esphome-smhub").replace("mkdir -p \"/config/esphome-smhub\"", "mkdir -p \"/config/esphome-smhub\"\ncp -rn /opt/*esphome*.yaml /config/esphome-smhub/ 2>/dev/null || true\ncp -rn /opt/.common-core.yaml /config/esphome-smhub/ 2>/dev/null || true"); f = open("/etc/s6-overlay/s6-rc.d/esphome/run", "w"); f.write(content); f.close()' && chmod +x /etc/s6-overlay/s6-rc.d/esphome/run
+COPY rootfs /
