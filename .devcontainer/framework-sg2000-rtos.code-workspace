@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "../../framework-sg2000-rtos"
+		},
+		{
+			"path": "../../platform-sg2000"
+		},
+		{
+			"path": ".."
+		}
+	],
+	"settings": {}
+}
