@@ -1,14 +1,14 @@
 {
-  "name": "ESPHome SMHUB Add-on (Production Git)",
+  "name": "ESPHome SMHUB Add-on (Local Development)",
   "build": {
-    "dockerfile": "../Dockerfile",
-    "context": "../.."
+    "dockerfile": "Dockerfile",
+    "context": ".."
   },
   "appPort": [
     "7123:8123",
     "7357:4357"
   ],
-  "postStartCommand": "bash .devcontainer/git/bootstrap",
+  "postStartCommand": "bash .devcontainer/bootstrap",
   "runArgs": [
     "-e",
     "GIT_EDITOR=code --wait",
@@ -26,7 +26,14 @@
       "extensions": [
         "timonwong.shellcheck",
         "esbenp.prettier-vscode",
-        "ms-python.python"
+        "ms-python.python",
+        "ms-python.pylint",
+        "ms-python.flake8",
+        "charliermarsh.ruff",
+        "visualstudioexptteam.vscodeintellicode",
+        "redhat.vscode-yaml",
+        "ms-vscode.cpptools",
+        "editorconfig.editorconfig"
       ],
       "settings": {
         "terminal.integrated.profiles.linux": {
@@ -37,6 +44,20 @@
         "terminal.integrated.defaultProfile.linux": "zsh",
         "python.defaultInterpreterPath": "/opt/venv/bin/python",
         "python.terminal.activateEnvironment": false,
+        "python.languageServer": "Pylance",
+        "[python]": {
+          "editor.defaultFormatter": "charliermarsh.ruff"
+        },
+        "yaml.customTags": [
+          "!secret scalar",
+          "!lambda scalar",
+          "!extend scalar",
+          "!remove scalar",
+          "!include_dir_named scalar",
+          "!include_dir_list scalar",
+          "!include_dir_merge_list scalar",
+          "!include_dir_merge_named scalar"
+        ],
         "editor.formatOnPaste": false,
         "editor.formatOnSave": true,
         "editor.formatOnType": true,

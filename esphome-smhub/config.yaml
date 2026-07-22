@@ -1,5 +1,5 @@
 name: "ESPHome for SMHUB"
-version: "1.0.0"
+version: "1.0.1"
 
 slug: "esphome-smhub"
 description: "ESPHome builder fork SMLIGHT SMHUB"
