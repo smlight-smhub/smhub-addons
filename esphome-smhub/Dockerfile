@@ -81,7 +81,7 @@ ENV PLATFORMIO_CORE_DIR=/opt/platformio
 COPY --from=python-builder /opt /opt
 
 # Copy config templates
-COPY config/smhub-esphome.yaml config/nano-esphome.yaml config/.common-core.yaml /config/
+COPY config/.common-core.yaml /config/
 
 EXPOSE 6052
 # No s6-overlay or HA-specific init scripts
@@ -113,5 +113,6 @@ COPY --from=python-builder /opt /opt
 # Inherits the entrypoint from the base HA Addon image
 # We must copy rootfs and template configs
 COPY --from=python-builder /opt/esphome-src/docker/ha-addon-rootfs/ /
+COPY config/.common-core.yaml /opt/
 
 COPY rootfs /

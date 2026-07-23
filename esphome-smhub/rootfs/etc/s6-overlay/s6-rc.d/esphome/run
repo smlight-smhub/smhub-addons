@@ -39,16 +39,12 @@ else
 fi
 
 mkdir -p "${pio_cache_base}"
-
 mkdir -p /config/esphome-smhub
 
 if [ -f /opt/.common-core.yaml ]; then
     bashio::log.info "Synchronizing .common-core.yaml..."
     cp -f /opt/.common-core.yaml /config/esphome-smhub/.common-core.yaml
 fi
-
-# Also copy the template yaml files if they don't exist yet
-cp -rn /opt/*esphome*.yaml /config/esphome-smhub/ 2>/dev/null || true
 
 if bashio::fs.directory_exists '/config/esphome-smhub/.esphome'; then
     bashio::log.info "Migrating old .esphome directory..."
